@@ -83,7 +83,7 @@ function test_js_debug($file_w_full_path, $path_parts) {
 
 function test_placeholder($file_w_full_path, $path_parts) {
   $check_extensions = array('js', 'php', 'module', 'inc', 'inc.php', 'tpl.php');
-  _search_in_file($check_extensions, $path_parts['extension'], '/lorem/i', 'Lorem found.');
+  _search_in_file($check_extensions, $path_parts['extension'], '/lorem/i', 'Lorem placeholder text found.');
 }
 
 function _output_error($message) {
