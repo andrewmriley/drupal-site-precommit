@@ -1,0 +1,28 @@
+<?php
+
+define('GIT_DIR', '.git');
+define('HOOKS_DIR', '.git/hooks');
+define('PRE_COMMIT_FILE', '.git/hooks/pre-commit');
+define('PRE_COMMIT_URL', 'http://gitscripts.s3.amazonaws.com/pre-commit');
+
+if (!file_exists(GIT_DIR)) {
+  exit("I cannot find the .git directory. Only run this script in the root of your git repo.\n");
+}
+
+if (!file_exists(HOOKS_DIR)) {
+  echo "Creating hooks directory.\n";
+  mkdir(HOOKS_DIR, 0775, true);
+}
+
+if (file_exists(PRE_COMMIT_FILE)) {
+  exit("You already have a " . PRE_COMMIT_FILE . ". Download this file manually and merge it into your existing pre-commit file. " . PRE_COMMIT_URL . "\n");
+}
+
+echo "Downloading pre-commit hook.\n";
+$fp = fopen(PRE_COMMIT_FILE, 'w');
+$precommit = file_get_contents(PRE_COMMIT_URL);
+fwrite($fp, $precommit);
+fclose($fp);
+chmod('.git/hooks/pre-commit', 0775);
+
+echo "Done.\n";

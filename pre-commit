@@ -1,0 +1,100 @@
+#!/usr/bin/php
+<?php
+
+$error_found = false;
+
+$cwd = getcwd();
+
+exec('git diff --cached --name-only --diff-filter=ACM', $git_output);
+
+if (count($git_output) > 0) {
+  echo "Drupal pre-commit hook starting:\n";
+  foreach($git_output AS $file_w_path) {
+    $file_w_full_path = $cwd . '/' . $file_w_path;
+    $path_parts = pathinfo($file_w_full_path);
+    if (should_check_directory($path_parts)) {
+      echo 'Checking ' . $file_w_path . "...\n";
+      $GLOBALS['file_contents'] = file_get_contents($file_w_full_path);
+      test_php($file_w_full_path, $path_parts);
+      test_php_die($file_w_full_path, $path_parts);
+      test_php_debug($file_w_full_path, $path_parts);
+      test_drupal_debug($file_w_full_path, $path_parts);
+      test_js_debug($file_w_full_path, $path_parts);
+      test_placeholder($file_w_full_path, $path_parts);
+    }
+  }
+  echo "Done. \n";
+}
+else {
+  echo "Skipping Drupal pre-commit hook since there's no files to check.\n";
+}
+
+if ($error_found) {
+  exit(200);
+}
+
+function should_check_directory($path_parts) {
+  $check_dirs = array('custom', 'features');
+  $dirs = explode('/', $path_parts['dirname']);
+  $matching_dirs = array_intersect($check_dirs, $dirs);
+  return count($matching_dirs) > 0;
+}
+
+function test_php($file_w_full_path, $path_parts) {
+  $check_extensions = array('php', 'module', 'inc', 'inc.php', 'tpl.php');
+  if (in_array($path_parts['extension'], $check_extensions)) {
+    echo "\033[0;31m";
+    exec('php -l "' . $file_w_full_path . '"', $output, $status);
+    echo "\033[0m";
+    if ($status != 0) {
+      $GLOBALS['error_found'] = true;
+      _output_error(join("\n", $output));
+    }
+  }
+}
+
+function test_drupal_coder($file_w_full_path, $path_parts) {
+  $check_extensions = array('php', 'module', 'inc', 'inc.php', 'tpl.php');
+  if (in_array($path_parts['extension'], $check_extensions)) {
+    exec('drush coder-review --minor --comment --i18n --release --security --sql --style --no-empty "' . $file_w_full_path . '"', $output, $code);
+    echo "\n";
+  }
+}
+
+function test_drupal_debug($file_w_full_path, $path_parts) {
+  $check_extensions = array('php', 'module', 'inc', 'inc.php', 'tpl.php');
+  _search_in_file($check_extensions, $path_parts['extension'], '/dpm\(.*\)/i', 'dpm found.');
+}
+
+function test_php_debug($file_w_full_path, $path_parts) {
+  $check_extensions = array('php', 'module', 'inc', 'inc.php', 'tpl.php');
+  _search_in_file($check_extensions, $path_parts['extension'], '/print_r\(.*\)/i', 'print_r found.');
+}
+
+function test_php_die($file_w_full_path, $path_parts) {
+  $check_extensions = array('php', 'module', 'inc', 'inc.php', 'tpl.php');
+  _search_in_file($check_extensions, $path_parts['extension'], '/die\(.*\)/i', 'die found.');
+}
+
+function test_js_debug($file_w_full_path, $path_parts) {
+  $check_extensions = array('js');
+  _search_in_file($check_extensions, $path_parts['extension'], '/console\.log\(.*\)/i', 'console.log found.');
+}
+
+function test_placeholder($file_w_full_path, $path_parts) {
+  $check_extensions = array('js', 'php', 'module', 'inc', 'inc.php', 'tpl.php');
+  _search_in_file($check_extensions, $path_parts['extension'], '/lorem/i', 'Lorem found.');
+}
+
+function _output_error($message) {
+  echo "\033[0;31m" . $message . "\033[0m\n";
+}
+
+function _search_in_file($extensions, $extension, $pattern, $error_message) {
+  if (in_array($extension, $extensions)) {
+    if (preg_match_all($pattern, $GLOBALS['file_contents'], $matches)) {
+      $GLOBALS['error_found'] = true;
+      _output_error($error_message);
+    }
+  }
+}
