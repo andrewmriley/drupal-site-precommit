@@ -62,18 +62,21 @@ function test_drupal_coder($file_w_full_path, $path_parts) {
 }
 
 function test_drupal_debug($file_w_full_path, $path_parts) {
-  $check_extensions = array('php', 'module', 'inc', 'inc.php', 'tpl.php');
-  _search_in_file($check_extensions, $path_parts['extension'], '/dpm\(.*\)/i', 'dpm found.');
+  $check_extensions = array('php', 'module', 'install', 'inc', 'inc.php', 'tpl.php');
+  _search_in_file($check_extensions, $path_parts['extension'], '/debug\(.*\)/i', 'debug() found.');
+  _search_in_file($check_extensions, $path_parts['extension'], '/dpm\(.*\)/i', 'dpm() found.');
+  _search_in_file($check_extensions, $path_parts['extension'], '/dsm\(.*\)/i', 'dsm() found.');
+  _search_in_file($check_extensions, $path_parts['extension'], '/kpr\(.*\)/i', 'kpr() found.');
 }
 
 function test_php_debug($file_w_full_path, $path_parts) {
   $check_extensions = array('php', 'module', 'inc', 'inc.php', 'tpl.php');
-  _search_in_file($check_extensions, $path_parts['extension'], '/print_r\(.*\)/i', 'print_r found.');
+  _search_in_file($check_extensions, $path_parts['extension'], '/print_r\(.*\)/i', 'print_r() found.');
 }
 
 function test_php_die($file_w_full_path, $path_parts) {
   $check_extensions = array('php', 'module', 'inc', 'inc.php', 'tpl.php');
-  _search_in_file($check_extensions, $path_parts['extension'], '/die\(.*\)/i', 'die found.');
+  _search_in_file($check_extensions, $path_parts['extension'], '/die\(.*\)/i', 'die() found.');
 }
 
 function test_js_debug($file_w_full_path, $path_parts) {
