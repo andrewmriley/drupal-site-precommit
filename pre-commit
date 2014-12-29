@@ -21,6 +21,7 @@ if (count($git_output) > 0) {
       test_drupal_debug($file_w_full_path, $path_parts);
       test_js_debug($file_w_full_path, $path_parts);
       test_placeholder($file_w_full_path, $path_parts);
+      test_eof_newline($file_w_full_path, $path_parts);
     }
   }
   echo "Done. \n";
@@ -89,6 +90,15 @@ function test_placeholder($file_w_full_path, $path_parts) {
   _search_in_file($check_extensions, $path_parts['extension'], '/lorem/i', 'Lorem placeholder text found.');
 }
 
+function test_eof_newline($file_w_full_path, $path_parts) {
+  $check_extensions = array('info', 'js', 'php', 'module', 'inc', 'inc.php', 'tpl.php');
+  if (in_array($path_parts['extension'], $check_extensions)) {
+    if (!preg_match('/\n\n$/', $GLOBALS['file_contents'])) {
+      _output_error('Missing newline at end of file.');
+    }
+  }
+}
+
 function _output_error($message) {
   echo "\033[0;31m" . $message . "\033[0m\n";
 }
@@ -101,3 +111,4 @@ function _search_in_file($extensions, $extension, $pattern, $error_message) {
     }
   }
 }
+
