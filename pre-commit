@@ -22,6 +22,7 @@ if (count($git_output) > 0) {
       test_js_debug($file_w_full_path, $path_parts);
       test_placeholder($file_w_full_path, $path_parts);
       test_eof_newline($file_w_full_path, $path_parts);
+      test_eol_character($file_w_full_path, $path_parts);
     }
   }
   echo "Done. \n";
@@ -97,6 +98,11 @@ function test_eof_newline($file_w_full_path, $path_parts) {
       _output_error('Missing newline at end of file.');
     }
   }
+}
+
+function test_eol_character($file_w_full_path, $path_parts) {
+  $check_extensions = array('info', 'js', 'php', 'module', 'inc', 'inc.php', 'tpl.php');
+  _search_in_file($check_extensions, $path_parts['extension'], '/\r/', 'Incorrect end of line character found.');
 }
 
 function _output_error($message) {
