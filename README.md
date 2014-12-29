@@ -4,9 +4,11 @@ This git hook will fire on commit and check for:
 
 - die()
 - print_r
-- dpm
+- dpm (kpr and debug as well)
 - console.log (JavaScript)
 - Lorem ipsum
+- Newline at end of file
+- Incorrect line endings
 
 This hook will only check features and custom directories (to reduce false positives
 from contrib commits.)
