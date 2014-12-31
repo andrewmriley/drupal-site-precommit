@@ -5,17 +5,31 @@ define('HOOKS_DIR', '.git/hooks');
 define('PRE_COMMIT_FILE', '.git/hooks/pre-commit');
 define('PRE_COMMIT_URL', 'https://raw.githubusercontent.com/andrewmriley/drupal-site-precommit/master/pre-commit');
 
+$options = getopt(null, array('update::', 'uninstall::'));
+$is_update = isset($options['update']);
+$is_uninstall = isset($options['uninstall']);
+
 if (!file_exists(GIT_DIR)) {
   exit("I cannot find the .git directory. Only run this script in the root of your git repo.\n");
 }
 
+if ($is_uninstall) {
+  exit("To remove the pre-commit hook go into the root of your repo and then remove the .git/hooks/pre-commit file. This script will not remove it for you.\n");
+}
+
+if (!$is_update && file_exists(PRE_COMMIT_FILE)) {
+  exit("You already have a " . PRE_COMMIT_FILE . ". Download this file manually and merge it into your existing pre-commit file. " . PRE_COMMIT_URL . "\n\nIf you are trying to upgrade the pre-commit then run the install script with a --update flag to wipe out the contents of your existing pre-commit hook file and replace it.\n");
+}
+
+echo "----\n";
+echo "Please only use this pre-commit file on workstations. It is not intended for server use!\n";
+echo "You can run this script with a --update flag to update the pre-commit hook if you want a newer version\n";
+echo "or you can run it with a --uninstall flag for directions on how to uninstall it\n";
+echo "----\n\n";
+
 if (!file_exists(HOOKS_DIR)) {
   echo "Creating hooks directory.\n";
   mkdir(HOOKS_DIR, 0775, true);
-}
-
-if (file_exists(PRE_COMMIT_FILE)) {
-  exit("You already have a " . PRE_COMMIT_FILE . ". Download this file manually and merge it into your existing pre-commit file. " . PRE_COMMIT_URL . "\n");
 }
 
 echo "Downloading pre-commit hook.\n";
