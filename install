@@ -3,7 +3,7 @@
 define('GIT_DIR', '.git');
 define('HOOKS_DIR', '.git/hooks');
 define('PRE_COMMIT_FILE', '.git/hooks/pre-commit');
-define('PRE_COMMIT_URL', 'http://gitscripts.s3.amazonaws.com/pre-commit');
+define('PRE_COMMIT_URL', 'https://raw.githubusercontent.com/andrewmriley/drupal-site-precommit/master/pre-commit');
 
 if (!file_exists(GIT_DIR)) {
   exit("I cannot find the .git directory. Only run this script in the root of your git repo.\n");

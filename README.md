@@ -15,9 +15,9 @@ from contrib commits.)
 
 Install
 -------
-Run `curl -fsSL http://gitscripts.s3.amazonaws.com/install` (or just download
-the install file however you want) and then in your repo's root run (you'll
-probably need to adjust the path to install) `php install`.
+Run `curl -fsSL https://raw.githubusercontent.com/andrewmriley/drupal-site-precommit/master/install > install`
+(or just download the install file however you want) and then in your repo's root
+run (you'll probably need to adjust the path to install) `php install`.
 
 That's it. Now when ever you run a commit the hook should fire and cancel the
 commit if any of the above items are found in your commit.
