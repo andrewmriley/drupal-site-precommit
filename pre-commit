@@ -9,7 +9,7 @@ exec('git diff --cached --name-only --diff-filter=ACM', $git_output);
 
 if (count($git_output) > 0) {
   echo "Drupal pre-commit hook starting:\n";
-  foreach($git_output AS $file_w_path) {
+  foreach ($git_output AS $file_w_path) {
     $file_w_full_path = $cwd . '/' . $file_w_path;
     $path_parts = pathinfo($file_w_full_path);
     if (should_check_directory($path_parts)) {
@@ -23,6 +23,7 @@ if (count($git_output) > 0) {
       test_placeholder($file_w_full_path, $path_parts);
       test_eof_newline($file_w_full_path, $path_parts);
       test_eol_character($file_w_full_path, $path_parts);
+      test_merge_conflict($file_w_full_path, $path_parts);
     }
   }
   echo "Done. \n";
@@ -105,6 +106,12 @@ function test_eol_character($file_w_full_path, $path_parts) {
   _search_in_file($check_extensions, $path_parts['extension'], '/\r/', 'Incorrect end of line character found.');
 }
 
+function test_merge_conflict($file_w_full_path, $path_parts) {
+  $msg = 'Merge conflict markers found.';
+  $check_extensions = array('info', 'js', 'php', 'module', 'inc');
+  _search_in_file($check_extensions, $path_parts['extension'], '/[><]{7}/', $msg);
+}
+
 function _output_error($message) {
   echo "\033[0;31m" . $message . "\033[0m\n";
 }
@@ -117,4 +124,3 @@ function _search_in_file($extensions, $extension, $pattern, $error_message) {
     }
   }
 }
-
